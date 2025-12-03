@@ -1,0 +1,46 @@
+# 04-spring-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-management-app
+  labels:
+    app: student-management
+spec:
+  replicas: 2 # Nombre de réplicas souhaité
+  selector:
+    matchLabels:
+      app: student-management
+  template:
+    metadata:
+      labels:
+        app: student-management
+    spec:
+      containers:
+        - name: student-management-container
+          # Assurez-vous que cette image a été construite dans l'environnement Minikube (Étape 1)
+          image: student-management:latest
+          imagePullPolicy: Never # Ne pas essayer de pull l'image depuis un registry externe
+          ports:
+            - containerPort: 8089 # Port exposé de votre application (server.port=8089)
+          envFrom:
+            # Importe les variables de ConfigMap
+            - configMapRef:
+                name: student-config
+            # Importe les variables de Secret (mot de passe BDD)
+            - secretRef:
+                name: mysql-pass-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: student-service
+  labels:
+    app: student-management
+spec:
+  type: NodePort
+  ports:
+    - port: 8089
+      targetPort: 8089 # Le port 8089 de votre conteneur
+      nodePort: 30089 # Port d'accès externe sur votre hôte Minikube (plage 30000-32767)
+  selector:
+    app: student-management

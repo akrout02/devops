@@ -1,0 +1,23 @@
+# 03-spring-config.yaml
+# ConfigMap : Contient les informations de connexion non sensibles
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: student-config
+data:
+  # Utilise le service Kubernetes 'mysql-service'
+  SPRING_DATASOURCE_URL: jdbc:mysql://mysql-service:3306/studentdb?createDatabaseIfNotExist=true
+  SPRING_DATASOURCE_USERNAME: root
+  # Configuration serveur de votre application (Port 8089 et Context Path)
+  SERVER_PORT: "8089"
+  SERVER_SERVLET_CONTEXT_PATH: "/student"
+---
+# Secret : Contient les informations sensibles (le mot de passe root)
+# NOTE : 'root123' encodé en Base64 est 'cm9vdDEyMw=='
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-pass-secret
+type: Opaque
+data:
+  SPRING_DATASOURCE_PASSWORD: cm9vdDEyMw==
