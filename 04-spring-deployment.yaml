@@ -17,7 +17,7 @@ spec:
       containers:
         - name: student-management-container
           # Image construite et poussée sur Docker Hub
-          image: student-app:latest
+          image: akrout2000/gestion-etudiante:1.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8089
