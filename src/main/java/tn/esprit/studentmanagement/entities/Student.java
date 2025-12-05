@@ -24,7 +24,10 @@ public class Student {
     private LocalDate dateOfBirth;
     private String address;
 
-    @ManyToOne
+    // ATTENTION : Cette ligne DOIT être modifiée.
+    // L'ajout de CascadeType.PERSIST permet la création du département
+    // en même temps que l'étudiant.
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Department department;
 
     @OneToMany(mappedBy = "student")
