@@ -1,3 +1,41 @@
+# --- DEPLOIEMENT (Crée et gère le Pod MySQL) ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql-container
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            # IMPORTANT: Le mot de passe (root123) et le nom de la DB (studentdb)
+            # DOIVENT correspondre à ce qui est défini dans 03-spring-config.yaml
+            - name: MYSQL_ROOT_PASSWORD
+              value: "root123"
+            - name: MYSQL_DATABASE
+              value: "studentdb"
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+---
+# --- SERVICE (Point d'entrée pour les autres Pods, nom = mysql-service) ---
 apiVersion: v1
 kind: Service
 metadata:
