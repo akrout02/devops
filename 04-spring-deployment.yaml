@@ -41,3 +41,4 @@ spec:
       nodePort: 30089
   selector:
     app: student-management
+
