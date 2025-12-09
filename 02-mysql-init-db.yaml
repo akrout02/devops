@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # Nom du ConfigMap
+  name: mysql-init-script
+  namespace: devops
+data:
+  # Clé contenant le script SQL
+  create_sonarqube_db.sql: |
+    -- Crée la base de données SonarQube si elle n'existe pas.
+    -- Utilise le jeu de caractères utf8mb4 requis pour les données d'analyse.
+    CREATE DATABASE IF NOT EXISTS sonarqube_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;

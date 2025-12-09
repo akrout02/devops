@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarqube-deployment
+  namespace: devops
+  labels:
+    app: sonarqube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarqube
+  template:
+    metadata:
+      labels:
+        app: sonarqube
+    spec:
+      # Contexte de sécurité obligatoire pour que SonarQube fonctionne correctement
+      # (en raison de l'utilisation d'Elasticsearch en interne)
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      containers:
+        - name: sonarqube
+          image: sonarqube:lts-community # Utilisation de l'image LTS
+          ports:
+            - containerPort: 9000
+          env:
+            # Configuration de la base de données MySQL
+            # Utilisation du nom d'utilisateur 'root'
+            - name: SONARQUBE_JDBC_USERNAME
+              value: root
+            # Utilisation du mot de passe 'root123' défini dans votre 02-mysql-deployment.yaml
+            - name: SONARQUBE_JDBC_PASSWORD
+              value: "root123"
+            # URL JDBC pointant vers votre service MySQL 'mysql-service'
+            # et la base de données 'sonarqube_db' que nous allons créer séparément
+            - name: SONARQUBE_JDBC_URL
+              value: jdbc:mysql://mysql-service:3306/sonarqube_db?useSSL=false&allowPublicKeyRetrieval=true
+
+            # Configuration d'Elasticsearch (obligatoire pour le conteneur)
+            - name: ES_JAVA_OPTS
+              value: "-Xms512m -Xmx512m"
+
+          # Montage des volumes persistants
+          volumeMounts:
+            # Stockage persistant des données (index, historique)
+            - name: sonarqube-data
+              mountPath: /opt/sonarqube/data
+            # Extensions et journaux peuvent utiliser des volumes temporaires (emptyDir)
+            - name: sonarqube-extensions
+              mountPath: /opt/sonarqube/extensions
+            - name: sonarqube-logs
+              mountPath: /opt/sonarqube/logs
+      volumes:
+        - name: sonarqube-data
+          persistentVolumeClaim:
+            claimName: sonarqube-pvc # Doit correspondre au nom dans sonarqube-pvc.yaml
+        - name: sonarqube-extensions
+          emptyDir: {}
+        - name: sonarqube-logs
+          emptyDir: {}

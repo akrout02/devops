@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  # Nom utilisé dans le sonarqube-deployment.yaml pour monter les données
+  name: sonarqube-pvc
+  namespace: devops
+spec:
+  # Doit correspondre au type de volume persistant disponible
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      # 8Gi est une taille recommandée pour une instance de développement de SonarQube
+      storage: 8Gi
