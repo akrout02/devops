@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  # Le nom de cette demande sera référencé par le Deployment
+  name: nexus-data-pvc
+  namespace: devops
+spec:
+  # Le mode d'accès ReadWriteOnce signifie qu'un seul noeud peut monter le volume
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      # Nexus a besoin de beaucoup d'espace (10 Go est un minimum recommandé)
+      storage: 10Gi

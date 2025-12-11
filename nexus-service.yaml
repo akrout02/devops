@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-service
+  namespace: devops
+spec:
+  # Utilisez NodePort pour y accéder facilement depuis la machine hôte
+  type: NodePort
+  selector:
+    app: nexus
+  ports:
+    - port: 8081 # Port interne du service
+      targetPort: 8081 # Port du conteneur Nexus
+      # Nous allons définir un NodePort fixe pour le trouver facilement plus tard
+      nodePort: 32001 # Doit être entre 30000-32767

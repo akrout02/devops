@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-deployment
+  namespace: devops
+  labels:
+    app: nexus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus
+  template:
+    metadata:
+      labels:
+        app: nexus
+    spec:
+      containers:
+        - name: nexus
+          # Image officielle de Sonatype Nexus 3
+          image: sonatype/nexus3:latest
+          ports:
+            - containerPort: 8081  # Port HTTP par défaut de Nexus
+          volumeMounts:
+            - name: nexus-persistent-storage
+              # Chemin où Nexus stocke ses données à l'intérieur du conteneur
+              mountPath: /nexus-data
+          resources:
+            requests:
+              memory: "1500Mi" # Nexus demande beaucoup de RAM
+              cpu: "1000m"    # 1 CPU
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+
+      volumes:
+        - name: nexus-persistent-storage
+          persistentVolumeClaim:
+            # Référence la demande de volume que nous avons créée à l'étape 1
+            claimName: nexus-data-pvc
