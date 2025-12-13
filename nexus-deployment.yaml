@@ -17,18 +17,21 @@ spec:
     spec:
       containers:
         - name: nexus
-          # Image officielle de Sonatype Nexus 3
           image: sonatype/nexus3:latest
           ports:
-            - containerPort: 8081  # Port HTTP par défaut de Nexus
+            - containerPort: 8081
           volumeMounts:
-            - name: nexus-persistent-storage
-              # Chemin où Nexus stocke ses données à l'intérieur du conteneur
-              mountPath: /nexus-data
+          # ... (votre mountPath)
+          env: # <--- NOUVELLE SECTION CLÉ
+            - name: INSTALL4J_ADD_VM_PARAMS
+              value: "-Xms512m -Xmx512m" # Force la JVM à 512 Mo
           resources:
             requests:
-              memory: "1500Mi" # Nexus demande beaucoup de RAM
-              cpu: "1000m"    # 1 CPU
+              memory: "512Mi" # Demande 512 Mo
+              cpu: "500m"
+            limits:
+              memory: "1Gi"   # Limite maximale 1 Go
+              cpu: "1000m"
             limits:
               memory: "2Gi"
               cpu: "2000m"
