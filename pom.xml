@@ -86,12 +86,12 @@
         <repository>
             <id>nexus-admin-credentials</id>
             <name>Nexus Repository</name>
-            <url>http://127.0.0.1:42583/repository/maven-releases/</url>
+            <url>http://127.0.0.1:8081/repository/maven-snapshots/</url>
         </repository>
         <snapshotRepository>
             <id>nexus-admin-credentials</id>
             <name>Nexus Snapshot Repository</name>
-            <url>http://127.0.0.1:42583/repository/maven-snapshots/</url>
+            <url>http://127.0.0.1:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
