@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: nexus-deployment
   namespace: devops
-  labels:
-    app: nexus
 spec:
   replicas: 1
   selector:
@@ -20,24 +18,24 @@ spec:
           image: sonatype/nexus3:latest
           ports:
             - containerPort: 8081
-          volumeMounts:
-          # ... (votre mountPath)
-          env: # <--- NOUVELLE SECTION CLÉ
+
+          env:
             - name: INSTALL4J_ADD_VM_PARAMS
-              value: "-Xms512m -Xmx512m" # Force la JVM à 512 Mo
+              value: "-Xms512m -Xmx512m"
+
+          volumeMounts:
+            - name: nexus-data
+              mountPath: /nexus-data
+
           resources:
             requests:
-              memory: "512Mi" # Demande 512 Mo
+              memory: "512Mi"
               cpu: "500m"
-            limits:
-              memory: "1Gi"   # Limite maximale 1 Go
-              cpu: "1000m"
             limits:
               memory: "2Gi"
               cpu: "2000m"
 
       volumes:
-        - name: nexus-persistent-storage
+        - name: nexus-data
           persistentVolumeClaim:
-            # Référence la demande de volume que nous avons créée à l'étape 1
             claimName: nexus-data-pvc
