@@ -83,15 +83,14 @@
         </plugins>
     </build>
     <distributionManagement>
-        <repository>
-            <id>nexus-admin-credentials</id>
-            <name>Nexus Repository</name>
-            <url>http://127.0.0.1:8081/repository/maven-snapshots/</url>
-        </repository>
         <snapshotRepository>
             <id>nexus-admin-credentials</id>
-            <name>Nexus Snapshot Repository</name>
-            <url>http://127.0.0.1:8081/repository/maven-snapshots/</url>
+            <url>http://nexus.devops.svc.cluster.local:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
+        <repository>
+            <id>nexus-admin-credentials</id>
+            <url>http://nexus.devops.svc.cluster.local:8081/repository/maven-releases/</url>
+        </repository>
     </distributionManagement>
+
 </project>
