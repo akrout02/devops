@@ -1,4 +1,4 @@
-# prometheus-configmap.yaml (Mise à jour)
+# prometheus-configmap.yaml (Mise à jour et CORRIGÉ)
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -18,18 +18,18 @@ data:
           - targets: ["172.30.12.45:8080"]
 
       # NOUVEAU JOB POUR L'APPLICATION SPRING BOOT
-      - job_name: "gestion-etudiante" # <--- Nom du job à utiliser dans la pipeline
+      - job_name: "gestion-etudiante" # <--- Nom du job utilisé dans le pipeline
         metrics_path: "/actuator/prometheus" # <--- Endpoint Actuator
         kubernetes_sd_configs:
           - role: service # On cible le Service Kubernetes
         relabel_configs:
-          # Cible uniquement le service nommé 'gestion-etudiante-service'
+          # CORRECTION 1 : Cible le service nommé 'student-service' (Nom réel dans 04-spring-deployment.yaml)
           - source_labels: [__meta_kubernetes_service_name]
-            regex: gestion-etudiante-service # <--- Nom du service Kubernetes de votre app
+            regex: student-service # <--- CORRIGÉ : utilise le nom du service K8s
             action: keep
-          # Remplace le port par défaut par le port du service (par défaut 8080)
+          # CORRECTION 2 : Utilise le port réel de l'application (8089)
           - source_labels: [__address__]
             target_label: __address__
             regex: (.+):(\d+)
-            replacement: $1:8080
+            replacement: $1:8089 # <--- CORRIGÉ : utilise le port 8089
             action: replace
