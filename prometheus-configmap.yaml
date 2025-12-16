@@ -1,0 +1,35 @@
+# prometheus-configmap.yaml (Mise à jour)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+    scrape_configs:
+      - job_name: "prometheus"
+        static_configs:
+          - targets: ["localhost:9090"]
+
+      - job_name: "jenkins"
+        metrics_path: "/prometheus"
+        static_configs:
+          - targets: ["172.30.12.45:8080"]
+
+      # NOUVEAU JOB POUR L'APPLICATION SPRING BOOT
+      - job_name: "gestion-etudiante" # <--- Nom du job à utiliser dans la pipeline
+        metrics_path: "/actuator/prometheus" # <--- Endpoint Actuator
+        kubernetes_sd_configs:
+          - role: service # On cible le Service Kubernetes
+        relabel_configs:
+          # Cible uniquement le service nommé 'gestion-etudiante-service'
+          - source_labels: [__meta_kubernetes_service_name]
+            regex: gestion-etudiante-service # <--- Nom du service Kubernetes de votre app
+            action: keep
+          # Remplace le port par défaut par le port du service (par défaut 8080)
+          - source_labels: [__address__]
+            target_label: __address__
+            regex: (.+):(\d+)
+            replacement: $1:8080
+            action: replace
