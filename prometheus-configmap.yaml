@@ -1,7 +1,9 @@
-# prometheus-configmap.yaml (Mise à jour et CORRIGÉ)
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  # Attention: Cette ConfigMap doit être appliquée dans le namespace 'default'
+  # si votre déploiement Prometheus est dans ce namespace, comme l'indiquent
+  # les logs de vos commandes 'kubectl get pods'.
   name: prometheus-config
 data:
   prometheus.yml: |
@@ -14,22 +16,27 @@ data:
 
       - job_name: "jenkins"
         metrics_path: "/prometheus"
+        # Veuillez vérifier que cette IP est correcte. C'est l'IP de votre Pod Jenkins.
         static_configs:
           - targets: ["172.30.12.45:8080"]
-
+      
       # NOUVEAU JOB POUR L'APPLICATION SPRING BOOT
-      - job_name: "gestion-etudiante" # <--- Nom du job utilisé dans le pipeline
-        metrics_path: "/actuator/prometheus" # <--- Endpoint Actuator
+      - job_name: "gestion-etudiante"
+        metrics_path: "/actuator/prometheus"
         kubernetes_sd_configs:
-          - role: service # On cible le Service Kubernetes
+          - role: service # Découverte basée sur les Services Kubernetes
+            # CORRECTION MAJEURE : Spécifie que nous recherchons les services
+            # dans le namespace 'devops' (où se trouve votre application)
+            namespaces:
+              names: [devops]
         relabel_configs:
-          # CORRECTION 1 : Cible le service nommé 'student-service' (Nom réel dans 04-spring-deployment.yaml)
+          # CORRECTION 1 : Cible le service nommé 'student-service' 
           - source_labels: [__meta_kubernetes_service_name]
-            regex: student-service # <--- CORRIGÉ : utilise le nom du service K8s
+            regex: student-service # <--- Nom réel du Service K8s dans 04-spring-deployment.yaml
             action: keep
           # CORRECTION 2 : Utilise le port réel de l'application (8089)
           - source_labels: [__address__]
             target_label: __address__
             regex: (.+):(\d+)
-            replacement: $1:8089 # <--- CORRIGÉ : utilise le port 8089
+            replacement: $1:8089 # <--- Port réel de l'application
             action: replace
