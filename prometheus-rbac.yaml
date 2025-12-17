@@ -1,0 +1,33 @@
+# 1. Service Account pour Prometheus (si non spécifié, utilise 'default')
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus-sa
+  namespace: default # Le namespace où se trouve Prometheus
+---
+# 2. ClusterRole : Donne les permissions de lecture nécessaires à Prometheus
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus-role
+rules:
+  - apiGroups: [""] # "" correspond aux ressources de base (Pods, Services, Endpoints)
+    resources:
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"] # Les verbes nécessaires pour la découverte
+---
+# 3. ClusterRoleBinding : Lie le Service Account au Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-role
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-sa # Le Service Account créé ci-dessus
+    namespace: default # Le namespace où se trouve Prometheus
