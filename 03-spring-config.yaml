@@ -1,4 +1,4 @@
-# 03-spring-config.yaml
+# 03-spring-config.yaml (SYNTAXE DE PROPRIÉTÉ SPRING)
 # ConfigMap : Contient les informations de connexion non sensibles
 apiVersion: v1
 kind: ConfigMap
@@ -11,9 +11,15 @@ data:
   # Configuration serveur de votre application (Port 8089 et Context Path)
   SERVER_PORT: "8089"
   SERVER_SERVLET_CONTEXT_PATH: "/student"
+
+  # NOUVEAU : Configuration Actuator pour Prometheus (FORMAT CORRIGÉ)
+  # Ces noms correspondent directement aux clés dans application.properties
+  management.endpoints.web.exposure.include: health,prometheus
+  management.endpoint.health.show-details: always
+  management.server.port: "8089" # Actuator sur le même port que le serveur
 ---
 # Secret : Contient les informations sensibles (le mot de passe root)
-# NOTE : 'root123' encodé en Base64 est 'cm9vdDEyMw=='
+# ... (Le Secret reste inchangé)
 apiVersion: v1
 kind: Secret
 metadata:
